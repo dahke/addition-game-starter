@@ -51,7 +51,8 @@ const App = {
   },
 
   handleLogout: async function () {
-
+    this.removeWallet();
+    location.reload();  // 새로고침
   },
 
   generateNumbers: async function () {
@@ -98,7 +99,11 @@ const App = {
   },
 
   reset: function () {
-
+    // auth 전역변수 초기화
+    this.auth = {
+      keystore: '',
+      password: ''
+    };
   },
 
   changeUI: async function (walletInstance) {
@@ -109,7 +114,9 @@ const App = {
   },
 
   removeWallet: function () {
-
+    cav.klay.accounts.wallet.clear();
+    sessionStorage.removeItem('walletInstance');
+    this.reset();
   },
 
   showTimer: function () {
