@@ -1,0 +1,42 @@
+
+# Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,soliditytruffle
+# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,soliditytruffle
+
+### SolidityTruffle ###
+# depedencies
+node_modules
+
+# testing
+coverage
+
+# production
+build
+build_webpack
+
+# misc
+.DS_Store
+.env
+npm-debug.log
+.truffle-solidity-loader
+.vagrant/**
+blockchain/geth/**
+blockchain/keystore/**
+blockchain/history
+
+#truffle
+.tern-port
+yarn.lock
+package-lock.json
+
+### VisualStudioCode ###
+.vscode/*
+!.vscode/tasks.json
+!.vscode/launch.json
+*.code-workspace
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+.history
+.ionide
+
+# End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,soliditytruffle
