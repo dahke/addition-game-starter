@@ -66,7 +66,15 @@ const App = {
   },
 
   generateNumbers: async function () {
+    var num1 = Math.floor((Math.random() * 50) + 10);  // 10~59까지의 소숫점 없는 숫자
+    var num2 = Math.floor((Math.random() * 50) + 10);
+    sessionStorage.setItem('result', num1 + num2);  // user의 답과 비교하기 위해 session에 저장
 
+    $('#start').hide();
+    $('#num1').text(num1);
+    $('#num2').text(num2);
+    $('#question').show();
+    document.querySelector('#answer').focus();
   },
 
   submitAnswer: async function () {
@@ -150,6 +158,7 @@ const App = {
     $('#loginModal').modal('hide');
     $('#login').hide();
     $('#logout').show();
+    $('#game').show();
     $('#address').append('<br>' + '<p>' + '내 계정 주소: ' + walletInstance.address + '</p>');
     $('#contractBalance')
     .append('<p>' + '이벤트 잔액: ' + cav.utils.fromPeb(await this.callContractBalance(), "KLAY") + ' KLAY' + '</p>');
