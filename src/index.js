@@ -1,4 +1,5 @@
 import Caver from "caver-js";
+import {Spinner} from "spin.js";
 
 const config = {
   rpcURL: 'https://api.baobab.klaytn.net:8651'
@@ -73,6 +74,7 @@ const App = {
   },
 
   deposit: async function () {
+    var spinner = this.showSpinner();
     const walletInstance = this.getWallet();
     if (walletInstance) {
       if (await this.callOwner() !== walletInstance.address) return;
@@ -89,6 +91,7 @@ const App = {
           })
           .once('receipt', (receipt) => {
             console.log(`(#${receipt.blockNumber})`, receipt);
+            spinner.stop();
             alert(amount + " KLAY를 컨트랙에 송금했습니다.");
             location.reload();
           })
@@ -167,7 +170,8 @@ const App = {
   },
 
   showSpinner: function () {
-
+    var target = document.getElementById("spin");
+    return new Spinner(opts).spin(target);
   },
 
   receiveKlay: function () {
