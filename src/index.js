@@ -4,6 +4,7 @@ const config = {
   rpcURL: 'https://api.baobab.klaytn.net:8651'
 }
 const cav = new Caver(config.rpcURL);
+const agContract = new cav.klay.Contract(DEPLOYED_ABI, DEPLOYED_ADDRESS);
 const App = {
   auth: {
     accessType: 'keystore',
@@ -72,19 +73,47 @@ const App = {
   },
 
   deposit: async function () {
-
+    const walletInstance = this.getWallet();
+    if (walletInstance) {
+      if (await this.callOwner() !== walletInstance.address) return;
+      else {
+        var amount = $('#amount').val();
+        if (amount) {
+          agContract.methods.deposit().send({
+            from: walletInstance.address,
+            gas: '250000',
+            value: cav.utils.toPeb(amount, "KLAY")
+          })
+          .once('transactionHash', (txHash) => {
+            console.log(`txHash: ${txHash}`);
+          })
+          .once('receipt', (receipt) => {
+            console.log(`(#${receipt.blockNumber})`, receipt);
+            alert(amount + " KLAY를 컨트랙에 송금했습니다.");
+            location.reload();
+          })
+          .once('error', (error) => {
+            alert(error.message);
+          });
+        }
+        return;
+      }
+    }
   },
 
   callOwner: async function () {
-
+    // await 키워드를 사용하여 비동기로 값을 받음
+    return await agContract.methods.owner().call();
   },
 
   callContractBalance: async function () {
-
+    return await agContract.methods.getBalance().call();
   },
 
   getWallet: function () {
-
+    if (cav.klay.accounts.wallet.length) {
+      return cav.klay.accounts.wallet[0];
+    }
   },
 
   checkValidKeystore: function (keystore) {
@@ -119,6 +148,12 @@ const App = {
     $('#login').hide();
     $('#logout').show();
     $('#address').append('<br>' + '<p>' + '내 계정 주소: ' + walletInstance.address + '</p>');
+    $('#contractBalance')
+    .append('<p>' + '이벤트 잔액: ' + cav.utils.fromPeb(await this.callContractBalance(), "KLAY") + ' KLAY' + '</p>');
+    
+    if (await this.callOwner() === walletInstance.address) {
+      $('#owner').show();
+    } 
   },
 
   removeWallet: function () {
