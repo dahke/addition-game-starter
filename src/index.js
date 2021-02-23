@@ -80,14 +80,26 @@ const App = {
   },
 
   submitAnswer: async function () {
-
+    const result = sessionStorage.getItem('result');
+    var answer = $('#answer').val();
+    if (answer === result) {
+      if (confirm("대단하네요. 0.1 KLAY 받기")) {
+        if (await this.callContractBalance() >= 0.1) {
+          this.receiveKlay();
+        } else {
+          alert("죄송합니다. 컨트랙의 KLAY가 다 소모되었습니다.");
+        }
+      }
+    } else {
+      alert("땡!");
+    }
   },
 
   deposit: async function () {
     var spinner = this.showSpinner();
     const walletInstance = this.getWallet();
     if (walletInstance) {
-      if (await this.callOwner() !== walletInstance.address) return;
+      if (await this.callOwner() !== walletInstance.address) return;  // 값이 다르면 함수 종료
       else {
         var amount = $('#amount').val();
         if (amount) {
@@ -103,7 +115,7 @@ const App = {
             console.log(`(#${receipt.blockNumber})`, receipt);
             spinner.stop();
             alert(amount + " KLAY를 컨트랙에 송금했습니다.");
-            location.reload();
+            location.reload();  // 컨트랙 잔액을 볼 수 있도록 화면 송출(새로 고침)
           })
           .once('error', (error) => {
             alert(error.message);
@@ -124,6 +136,7 @@ const App = {
   },
 
   getWallet: function () {
+    // 현재 caver wallet에 존재하는 내 계정 정보를 가져옴
     if (cav.klay.accounts.wallet.length) {
       return cav.klay.accounts.wallet[0];
     }
@@ -198,7 +211,31 @@ const App = {
   },
 
   receiveKlay: function () {
+    var spinner = this.showSpinner();
+    const walletInstance = this.getWallet();
 
+    if (!walletInstance) return;
+
+    // deposit 함수와 다르게 transfer 함수의 type이 payable이 아니기 때문에 value 필요없음
+    agContract.methods.transfer(cav.utils.toPeb("0.1", "KLAY")).send({
+      from: walletInstance.address,
+      gas: '250000'
+    }).then(function (receipt) {
+      if (receipt.status) {
+        spinner.stop();
+        alert("0.1 KLAY가 " + walletInstance.address + " 계정으로 지급되었습니다.");
+        $('#transaction').html("");
+        $('#transaction')
+        .append(`<p><a href='https://baobab.klaytnscope.com/tx/${receipt.txHash}'
+        target='_blank'>클레이튼 Scope에서 트랜잭션 확인</a></p>`);
+        return agContract.methods.getBalance().call()
+          .then(function (balance) {
+            $('#contractBalance').html("");
+            $('#contractBalance')
+             .append('<p>' + '이벤트 잔액: ' + cav.utils.fromPeb(balance, "KLAY") +' KLAY' + '</p>');
+          })
+      }
+    })
   }
 };
 
