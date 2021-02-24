@@ -4,6 +4,7 @@ contract AdditionGame {
     address public owner;
 
     constructor() public {
+        // msg.sender는 현재 이 컨트랙을 호출하고 있는 계정을 말함
         owner = msg.sender;
     }
     
@@ -12,6 +13,7 @@ contract AdditionGame {
     }
 
     function deposit() public payable {  
+        // 유효성 체크
         require(msg.sender == owner);
     }   
   

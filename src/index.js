@@ -95,6 +95,8 @@ const App = {
     }
   },
 
+  // Klay송금은 owner계정만 가능
+  // owner계정이 맞다면 컨트랙의 deposit함수에 접근하여 Klay송금
   deposit: async function () {
     var spinner = this.showSpinner();
     const walletInstance = this.getWallet();
@@ -214,17 +216,19 @@ const App = {
     var spinner = this.showSpinner();
     const walletInstance = this.getWallet();
 
+    // 값이 없다면 함수 종료
     if (!walletInstance) return;
 
-    // deposit 함수와 다르게 transfer 함수의 type이 payable이 아니기 때문에 value 필요없음
+    // deposit함수와 다르게 transfer함수의 type이 payable이 아니기 때문에 value필드 필요없음
     agContract.methods.transfer(cav.utils.toPeb("0.1", "KLAY")).send({
       from: walletInstance.address,
       gas: '250000'
     }).then(function (receipt) {
+      // receipt오브젝트의 status필드값이 true면 성공한 것
       if (receipt.status) {
         spinner.stop();
         alert("0.1 KLAY가 " + walletInstance.address + " 계정으로 지급되었습니다.");
-        $('#transaction').html("");
+        $('#transaction').html(""); // 매번 새로운 링크를 보여주기 위해 내용 지우기
         $('#transaction')
         .append(`<p><a href='https://baobab.klaytnscope.com/tx/${receipt.txHash}'
         target='_blank'>클레이튼 Scope에서 트랜잭션 확인</a></p>`);
