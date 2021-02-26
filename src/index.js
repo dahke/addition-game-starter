@@ -230,7 +230,7 @@ const App = {
         alert("0.1 KLAY가 " + walletInstance.address + " 계정으로 지급되었습니다.");
         $('#transaction').html(""); // 매번 새로운 링크를 보여주기 위해 내용 지우기
         $('#transaction')
-        .append(`<p><a href='https://baobab.klaytnscope.com/tx/${receipt.txHash}'
+        .append(`<p><a href='https://baobab.klaytnscope.com/tx/${receipt.transactionHash}'
         target='_blank'>클레이튼 Scope에서 트랜잭션 확인</a></p>`);
         return agContract.methods.getBalance().call()
           .then(function (balance) {
